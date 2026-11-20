@@ -1,5 +1,6 @@
 import { Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { useProgress } from '@react-three/drei'
 import SiteScene from './SiteScene.jsx'
 import CameraRig from './CameraRig.jsx'
 import TuningApplier from './TuningApplier.jsx'
@@ -22,6 +23,7 @@ import {
   stopOfSection,
 } from './rolling.js'
 import { assetUrl } from '../assets.js'
+import { setLoadProgress } from './loader.js'
 import { ErrorBoundary, GlobalErrors } from '../ErrorScreen.jsx'
 
 const BACKGROUND = '#c9c7c4'
@@ -264,6 +266,7 @@ export default function SiteApp() {
   return (
     <div className="site">
       <GlobalErrors />
+      <LoadProgress />
       <ErrorBoundary>
         <div className="stage" ref={stageRef}>
           <Canvas resize={{ debounce: 0 }} dpr={[1, 2]} camera={{ position: CAMERA_POSITION, fov: SIDE_VIEW ? 8 : 11.6, near: 0.1, far: 50 }}>
@@ -319,4 +322,11 @@ export default function SiteApp() {
       </nav>
     </div>
   )
+}
+
+/** Feeds the file-loading progress to the loading screen in index.html. */
+function LoadProgress() {
+  const progress = useProgress((s) => s.progress)
+  useEffect(() => setLoadProgress(progress), [progress])
+  return null
 }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react'
+import { hideLoader } from './loader.js'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { CALLOUTS } from './content.js'
@@ -107,7 +108,10 @@ export function CalloutProjector({ focus }) {
   useFrame((_, dt) => {
     // mounted inside the scene's Suspense: some frames after the tire first draws, tell
     // screenshot scripts (scripts/capture-site.mjs) the page is ready
-    if (++frames.current === 40) window.__siteReady = true
+    if (++frames.current === 40) {
+      window.__siteReady = true
+      hideLoader()
+    }
 
     // The camera rig moved the camera earlier this frame, but its view matrix is only
     // refreshed at render time: without this the rings trail the tire by a frame.
