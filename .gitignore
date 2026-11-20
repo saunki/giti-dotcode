@@ -14,3 +14,6 @@ mockups/
 .mcp.json
 .claude/
 skills-lock.json
+
+# Behance presentation exports
+behance/

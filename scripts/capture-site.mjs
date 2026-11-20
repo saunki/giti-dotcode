@@ -41,7 +41,8 @@ for (const shot of shots) {
   const [query, ...opts] = rest.split('|')
   const opt = Object.fromEntries(opts.map((o) => o.split('=')))
   const [w, h] = (opt.size ?? `${W}x${H}`).split('x').map(Number)
-  await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: w < 760 })
+  const dpr = Number(opt.dpr ?? 1) // |dpr=2: retina-resolution stills
+  await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: dpr, mobile: w < 760 })
   await send('Page.navigate', { url: `${base}/${opt.page ?? ''}?${query}` })
   const t0 = Date.now()
   while (!(await evaluate('window.__siteReady === true'))) {

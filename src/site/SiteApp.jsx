@@ -27,6 +27,8 @@ import { ErrorBoundary, GlobalErrors } from '../ErrorScreen.jsx'
 const BACKGROUND = '#c9c7c4'
 const params = new URLSearchParams(location.search)
 const SIDE_VIEW = params.has('side') // calibration: look straight at the outer sidewall
+// ?clean: just the 3D scene, centred, no header/callouts/copy (stills for presentations)
+const CLEAN = params.has('clean')
 
 
 // RS Camera.1 from C4D: the website keeps the render framing (plus the cursor tilt)
@@ -47,7 +49,7 @@ const FRAME_SHIFT = 0.11 // fraction of the viewport width
 const NARROW = 760 // px; below this the phone layout is used (same breakpoint in Callouts.jsx, site.css)
 const TIRE_W = 0.62 // tire width / viewport height at zoom 1 (the C4D framing)
 const TIRE_H = 0.78 // tire height (tread + floor contact) / viewport height at zoom 1
-function FrameShift() {
+function FrameShift({ shift = FRAME_SHIFT }) {
   const camera = useThree((s) => s.camera)
   const size = useThree((s) => s.size)
   useLayoutEffect(() => {
@@ -59,11 +61,11 @@ function FrameShift() {
       camera.setViewOffset(w, h, 0, h / 2 - centre, w, h)
     } else {
       camera.zoom = 1
-      camera.setViewOffset(w, h, w * FRAME_SHIFT, 0, w, h)
+      camera.setViewOffset(w, h, w * shift, 0, w, h)
     }
     camera.updateProjectionMatrix()
     return () => camera.clearViewOffset()
-  }, [camera, size])
+  }, [camera, size, shift])
   return null
 }
 
@@ -255,22 +257,22 @@ export default function SiteApp() {
             <WheelDriver onSection={onSection} />
             {/* the look (lights, HDRI, shadow, tone mapping, materials): tuning.js */}
             <TuningApplier />
-            {!SIDE_VIEW && <FrameShift />}
+            {!SIDE_VIEW && <FrameShift shift={CLEAN ? 0 : FRAME_SHIFT} />}
             <Suspense fallback={null}>
               <SiteScene />
               <CalloutProjector focus={current.focus} />
             </Suspense>
           </Canvas>
         </div>
-        <CalloutLayer open={open} onToggle={onToggle} />
+        {!CLEAN && <CalloutLayer open={open} onToggle={onToggle} />}
       </ErrorBoundary>
 
-      <Header />
+      {!CLEAN && <Header />}
       {/* look-dev panel, only with ?tune in the address */}
       {TUNE && <TuningPanel />}
 
       {/* section copy, bottom left */}
-      <div className="caption" key={current.id}>
+      <div className="caption" key={current.id} hidden={CLEAN}>
         <span className="kicker">
           {section === 0 ? 'Intro' : `${String(stopOfSection(section) + 1).padStart(2, '0')} / ${String(STOPS.length).padStart(2, '0')}`}
           {' · '}
@@ -281,7 +283,7 @@ export default function SiteApp() {
       </div>
 
       {/* stop dots, right edge (the intro only exists at the start) */}
-      <nav className="progress" aria-label="Sections">
+      <nav className="progress" aria-label="Sections" hidden={CLEAN}>
         {SECTIONS.map((s, i) =>
           s.focus ? (
             <a

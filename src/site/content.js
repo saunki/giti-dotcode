@@ -97,7 +97,8 @@ export const CALLOUTS = [
       ['P2M7A0', 'Maker’s code', 'Size and construction batch'],
       ['WWYY', 'Date', 'Week and year it was made, e.g. 2425 = week 24 of 2025'],
     ],
-    body: ['Check the date code when buying: tires age even in storage. Most makers advise replacing tires older than 6–10 years.'],
+    // matches the campaign ("The Canvas of the Road"): an unused tire stays as good as new
+    body: ['A tire is a blank canvas: stored properly (cool, dry, out of the sun), it stays as good as new whatever its date code says. Its journey only starts once it hits the road.'],
   },
 ]
 

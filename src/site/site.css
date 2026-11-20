@@ -475,3 +475,8 @@ body {
   z-index: 100;
   --font-family: 'Archivo', system-ui, sans-serif;
 }
+
+/* ?clean captures: no page UI over the 3D scene (the progress nav sets display: grid) */
+[hidden] {
+  display: none !important;
+}
