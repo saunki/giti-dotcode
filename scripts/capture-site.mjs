@@ -42,7 +42,7 @@ for (const shot of shots) {
   const opt = Object.fromEntries(opts.map((o) => o.split('=')))
   const [w, h] = (opt.size ?? `${W}x${H}`).split('x').map(Number)
   await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: w < 760 })
-  await send('Page.navigate', { url: `${base}/?${query}` })
+  await send('Page.navigate', { url: `${base}/${opt.page ?? ''}?${query}` })
   const t0 = Date.now()
   while (!(await evaluate('window.__siteReady === true'))) {
     if (Date.now() - t0 > 120000) throw new Error(`timeout: ${name}`)
