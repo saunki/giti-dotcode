@@ -76,6 +76,12 @@ for (const shot of shots) {
     await sleep(4000) // coast to a stop
     await report('drag')
   }
+  // |label=DOT: click the callout label whose name contains this text, let it roll there
+  if (opt.label) {
+    await evaluate(`[...document.querySelectorAll('.callout-label')].find(b => b.textContent.includes(${JSON.stringify(opt.label)}))?.click()`)
+    await sleep(3500)
+    console.log(`  after label click: ${await evaluate("document.querySelector('.caption .kicker')?.textContent")}, open: ${await evaluate("document.querySelector('.callout[data-open=\"true\"] .name')?.textContent ?? 'none'")}`)
+  }
   // |mouse=x,y: park the cursor (fractions of the viewport) for the camera tilt
   if (opt.mouse) {
     const [fx, fy] = opt.mouse.split(',').map(Number)

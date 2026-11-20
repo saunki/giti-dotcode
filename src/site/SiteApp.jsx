@@ -222,11 +222,26 @@ export default function SiteApp() {
 
   // the section follows the wheel (it can roll past several while coasting);
   // a new section folds the open panel away
+  //
+  // A click on another section's label rolls the wheel there and asks for that panel to
+  // unfold on arrival (`pendingOpen`); the sections passed on the way don't cancel it.
+  // It only unfolds if the wheel is still heading where the click sent it, so a scroll or
+  // drag in between drops the request.
+  const sectionRef = useRef(section)
+  const pendingOpen = useRef(null) // { id, angle }
   const onSection = useCallback((s) => {
-    setSection((prev) => {
-      if (prev !== s) setOpen(null)
-      return s
-    })
+    if (s === sectionRef.current) return
+    sectionRef.current = s
+    setSection(s)
+    const pending = pendingOpen.current
+    if (pending && wheelState.target === pending.angle) {
+      if (SECTIONS[s].focus !== pending.id) return // still on the way: leave it folded
+      pendingOpen.current = null
+      setOpen(pending.id)
+      return
+    }
+    pendingOpen.current = null
+    setOpen(null)
   }, [])
 
   useStepInput(close)
@@ -238,8 +253,9 @@ export default function SiteApp() {
   const onToggle = (id) => {
     const target = SECTIONS.findIndex((s) => s.focus === id)
     if (target !== -1 && target !== section) {
+      setOpen(null)
       goToStop(stopOfSection(target))
-      setTimeout(() => setOpen(id), 0)
+      pendingOpen.current = { id, angle: wheelState.target } // unfolds when it arrives
     } else setOpen((o) => (o === id ? null : id))
   }
 
