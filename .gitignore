@@ -1,0 +1,16 @@
+node_modules
+dist
+dist-artifact
+
+# Cinema 4D sources (scenes, 16k HDRI, 4k licensed textures, raw export): too big for
+# GitHub and not needed to build the site; public/ holds the web-ready versions
+C4d/
+# brand master files (the logo SVG in public/brand is extracted from these)
+assets/
+# design review screenshots
+mockups/
+
+# local tool settings
+.mcp.json
+.claude/
+skills-lock.json
